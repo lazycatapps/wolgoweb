@@ -29,6 +29,11 @@ locales:
 
       ## 使用说明
 
+      **重要提示**：
+      - 应用本身运行在 HTTP 协议上，但 Lazycat 平台会自动通过网关将其包装为 HTTPS 对外提供服务
+      - 应用默认界面显示的 API 地址中会显示 `http://`，实际使用时必须替换为 `https://`
+      - 所有外部访问均使用 HTTPS 协议，确保通信安全
+
       ### 基本调用
       ```
       https://wolgoweb.${box-name}.heiyu.space/wol?mac=[MAC地址]
@@ -39,8 +44,8 @@ locales:
       https://wolgoweb.${box-name}.heiyu.space/wol?mac=[MAC地址]&key=[API密钥]
       ```
 
-      ### Web 界面
-      访问 `https://wolgoweb.${box-name}.heiyu.space` 进入 Web 管理界面
+      ### 帮助文档
+      访问 `https://wolgoweb.${box-name}.heiyu.space/readme` 查看完整的使用文档
 
   en:
     name: WolGoWeb
@@ -62,6 +67,11 @@ locales:
 
       ## Usage Instructions
 
+      **Important Notes**:
+      - The application itself runs on HTTP protocol, but Lazycat platform automatically wraps it with HTTPS through the gateway for external access
+      - The API addresses shown in the application's default interface will display `http://`, which must be replaced with `https://` for actual use
+      - All external access uses HTTPS protocol to ensure secure communication
+
       ### Basic Call
       ```
       https://wolgoweb.${box-name}.heiyu.space/wol?mac=[MAC-address]
@@ -72,8 +82,8 @@ locales:
       https://wolgoweb.${box-name}.heiyu.space/wol?mac=[MAC-address]&key=[API-key]
       ```
 
-      ### Web Interface
-      Visit `https://wolgoweb.${box-name}.heiyu.space` to access the web management interface
+      ### Documentation
+      Visit `https://wolgoweb.${box-name}.heiyu.space/readme` for complete usage documentation
 
 # 软件本身的 license
 license: https://github.com/xiaoxinpro/WolGoWeb?tab=GPL-3.0-1-ov-file#readme
@@ -92,17 +102,26 @@ application:
   # 期望的 app 域名，如果系统中已经有对应域名则会提示用户选择其他域名。 最终 app 分配到的域名以/lzcapp/run/app.subdomain 为准
   subdomain: wolgoweb
 
+  # 是否启用多实例
+  multi_instance: false
+
   routes:
-    # - /=http://wol-go-web.cloud.lazycat.app.liu.wolgoweb.lzcapp:59090
-    - /=file:///lzcapp/pkg/content/
+    - /=http://host.lzcapp:59090/
+    - /readme=file:///lzcapp/pkg/content/
 
   # 公开访问路径（无需登录）
   public_path:
     - /
 
-  # 是否启用多实例
-  multi_instance: false
-
+  # TCP/UDP 服务配置
+  ingress:
+    - protocol: tcp                       # 协议类型 (tcp/udp)
+      port: 59090                         # 目标端口号 (留空则使用入站端口)
+      service: wol-go-web                 # 服务容器名称 (留空则为 app)
+      description: WOL 服务               # 服务描述
+      publish_port: "59090"               # 入站端口号 (支持 "1000-50000" 范围)
+      send_port_info: false               # 发送 uint16 端口信息 (little endian)
+      yes_i_want_80_443: false            # 允许 80/443 流量 (绕过系统鉴权,慎用!)
 
 services:
   wol-go-web:
