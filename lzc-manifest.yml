@@ -1,0 +1,117 @@
+# app 的唯一 id,上架到商店需要保证不要冲突,尽量使用开发者自己的域名作为后缀.
+package: cloud.lazycat.app.liu.wolgoweb
+# app 的版本
+version: 1.7.71
+
+name: WolGoWeb
+keyword: wol, wake-on-lan, network, remote-wake, web-api, nas, go, golang, 远程唤醒, 网络唤醒
+description: WolGoWeb - 基于 Golang 的远程唤醒 WebAPI 工具
+
+# 软件名称,会显示在启动器之类的地方
+locales:
+  zh:
+    name: WolGoWeb 远程唤醒工具
+    description: |
+      ## WolGoWeb - 远程唤醒 WebAPI 工具
+
+      WolGoWeb 官方网站：https://github.com/xiaoxinpro/WolGoWeb
+
+      WolGoWeb 是一款基于 Golang 开发的远程唤醒 WebAPI 工具，主要用于搭建在局域网服务器或 NAS 中，实现通过 WebAPI 唤醒局域网内主机。该项目已有 5 年测试历史，在多个测试和生产环境中稳定运行。
+
+      ## 主要功能
+
+      - 🌐 **WebAPI 唤醒**: 通过 HTTP 接口发送 WOL 魔术数据包
+      - 🖥️ **Web 管理界面**: 可选的网页管理界面
+      - 🔐 **身份验证**: 支持用户名密码登录（可选）
+      - 🔑 **API 密钥验证**: 支持 API Key 验证机制
+      - 💻 **跨平台支持**: 支持 Windows、Linux、FreeBSD 等平台
+      - 📦 **无依赖部署**: 二进制文件可直接运行
+
+      ## 使用说明
+
+      ### 基本调用
+      ```
+      https://wolgoweb.${box-name}.heiyu.space/wol?mac=[MAC地址]
+      ```
+
+      ### 带密钥验证
+      ```
+      https://wolgoweb.${box-name}.heiyu.space/wol?mac=[MAC地址]&key=[API密钥]
+      ```
+
+      ### Web 界面
+      访问 `https://wolgoweb.${box-name}.heiyu.space` 进入 Web 管理界面
+
+  en:
+    name: WolGoWeb
+    description: |
+      ## WolGoWeb - Wake-on-LAN WebAPI Tool
+
+      WolGoWeb official website: https://github.com/xiaoxinpro/WolGoWeb
+
+      WolGoWeb is a remote Wake-on-LAN WebAPI tool developed with Golang, designed for deployment on local network servers or NAS devices to wake up hosts on the local network via WebAPI. The project has been tested for 5 years and runs stably in many testing and production environments.
+
+      ## Main Features
+
+      - 🌐 **WebAPI Wake**: Send WOL magic packets through HTTP interface
+      - 🖥️ **Web Management Interface**: Optional web page management interface
+      - 🔐 **Authentication**: Supports username/password login (optional)
+      - 🔑 **API Key Verification**: Supports API key verification mechanism
+      - 💻 **Cross-platform Support**: Supports Windows, Linux, FreeBSD, etc.
+      - 📦 **No-dependency Deployment**: Binary files can run directly
+
+      ## Usage Instructions
+
+      ### Basic Call
+      ```
+      https://wolgoweb.${box-name}.heiyu.space/wol?mac=[MAC-address]
+      ```
+
+      ### With API Key
+      ```
+      https://wolgoweb.${box-name}.heiyu.space/wol?mac=[MAC-address]&key=[API-key]
+      ```
+
+      ### Web Interface
+      Visit `https://wolgoweb.${box-name}.heiyu.space` to access the web management interface
+
+# 软件本身的 license
+license: https://github.com/xiaoxinpro/WolGoWeb?tab=GPL-3.0-1-ov-file#readme
+
+# 软件的主页,会在商店等地方体现
+homepage: https://github.com/xiaoxinpro/WolGoWeb
+
+# lpk 的作者,会在商店等地方体现
+author: liu
+
+# application 作为一个特殊的 container 运行，对应的 service 名称为固定的`app`， 其他 service 可以通过此名称与 app 进行通讯
+application:
+  #是否存在后台任务， 若存在则系统不会对此 app 进行主动休眠等操作
+  background_task: false
+
+  # 期望的 app 域名，如果系统中已经有对应域名则会提示用户选择其他域名。 最终 app 分配到的域名以/lzcapp/run/app.subdomain 为准
+  subdomain: wolgoweb
+
+  routes:
+    # - /=http://wol-go-web.cloud.lazycat.app.liu.wolgoweb.lzcapp:59090
+    - /=file:///lzcapp/pkg/content/
+
+  # 公开访问路径（无需登录）
+  public_path:
+    - /
+
+  # 是否启用多实例
+  multi_instance: false
+
+
+services:
+  wol-go-web:
+    # lzc-cli appstore copy-image chishin/wol-go-web:latest
+    image: registry.lazycat.cloud/liu/chishin/wol-go-web:84f20bbab5163f36
+    network_mode: host
+    environment:
+      - PORT=59090
+      - WEB=true
+      - KEY=false
+      # - USERNAME=admin
+      # - PASSWORD=admin
